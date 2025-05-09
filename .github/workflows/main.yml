@@ -1,0 +1,24 @@
+name: Debug via tmate
+
+on: [workflow_dispatch] # Bisa dipicu manual dari GitHub UI
+
+jobs:
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup tmate
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y tmate
+
+      - name: Start tmate session
+        run: |
+          tmate -S /tmp/tmate.sock new-session -d
+          tmate -S /tmp/tmate.sock wait tmate-ready
+          echo "SSH connection:"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+
+      - name: Keep session alive
+        run: |
+          echo "Tmate session is running. Use SSH to connect."
+          sleep infinity
