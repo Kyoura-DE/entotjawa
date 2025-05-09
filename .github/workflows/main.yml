@@ -1,24 +1,43 @@
-name: Debug via tmate
+name: Persistent Telethon Bot
 
-on: [workflow_dispatch] # Bisa dipicu manual dari GitHub UI
+on:
+  workflow_dispatch:
 
 jobs:
-  debug:
+  run-bot:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Setup tmate
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y tmate
+    - name: Install dependencies
+      run: |
+        sudo apt update
+        sudo apt install -y python3 python3-pip screen wget curl jq
 
-      - name: Start tmate session
-        run: |
-          tmate -S /tmp/tmate.sock new-session -d
-          tmate -S /tmp/tmate.sock wait tmate-ready
-          echo "SSH connection:"
-          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+    - name: Download required files
+      run: |
+        wget https://github.com/Kyoura-DE/entotjawa/raw/refs/heads/main/userbot_session.session
+        wget https://github.com/Kyoura-DE/entotjawa/raw/refs/heads/main/ubot.py
 
-      - name: Keep session alive
-        run: |
-          echo "Tmate session is running. Use SSH to connect."
-          sleep infinity
+    - name: Install Telethon
+      run: pip3 install telethon
+
+    - name: Run script in screen session
+      run: |
+        screen -dmS telebot bash -c "python3 ubot.py"
+
+    - name: Wait and trigger new workflow
+      run: |
+        echo "Sleeping for 5 hours 55 minutes..."
+        sleep $((60 * 355))  # 5h 55m
+
+        echo "Triggering next workflow run..."
+        sleep 5
+        echo icikiwir
+        curl -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer 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" \
+          https://api.github.com/repos/Kyoura-DE/entotjawa/actions/workflows/main.yml/dispatches \
+          -d '{"ref":"main"}'
+          echo kentot
+
+        echo "Workflow finished."
