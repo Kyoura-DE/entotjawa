@@ -23,6 +23,8 @@ jobs:
 
     - name: Run script in screen session
       run: |
+        sudo su
+        whoami
         screen -dmS telebot bash -c "python3 ubot.py"
 
     - name: Wait and trigger new workflow
